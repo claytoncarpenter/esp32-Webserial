@@ -3,10 +3,11 @@
 #include "AsyncTCP.h"
 #include <ESPAsyncWebServer.h>
 #include <WebSerial.h>
+#include <string>
 
 
 #define LED 15
-
+String lastMessage = "";
 AsyncWebServer server(80);
 // void recvMsg(uint8_t *data, size_t len){
 //   WebSerial.println("Received Data...");
@@ -29,6 +30,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Hello, ESP32!");
   pinMode(LED, OUTPUT);
+  
 
   const char* ssid = "Carpenters";
   const char* password = "1201carp";
@@ -48,6 +50,7 @@ void setup() {
 }
 
 void loop() {
+  
   delay(250);
 
   
@@ -66,10 +69,17 @@ void loop() {
 
   if(value < 300) {
     digitalWrite(LED, HIGH);
+    if(lastMessage!="Light On") {
+      lastMessage = "Light On";
+      WebSerial.println(lastMessage);
+      }
   }
   else {
     digitalWrite(LED, LOW);
-     WebSerial.println("Light Off");
+    if(lastMessage!="Light Off") {
+      lastMessage = "Light Off";
+      WebSerial.println(lastMessage);
+      }
   }
   
    
