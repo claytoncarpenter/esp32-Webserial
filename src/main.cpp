@@ -7,6 +7,7 @@
 
 
 #define LED 15
+#define water 35
 String lastMessage = "";
 AsyncWebServer server(80);
 // void recvMsg(uint8_t *data, size_t len){
@@ -79,6 +80,10 @@ void loop() {
     if(lastMessage!="Light Off") {
       lastMessage = "Light Off";
       WebSerial.println(lastMessage);
+      value = analogRead(water);
+      WebSerial.print("water sensor value:");
+      WebSerial.println(value);
+
       }
   }
   
