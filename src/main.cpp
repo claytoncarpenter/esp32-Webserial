@@ -5,9 +5,13 @@
 #include <WebSerial.h>
 #include <string>
 
+#include <HTTPClient.h>
+
 
 #define LED 15
-#define water 35
+
+
+float value;
 String lastMessage = "";
 AsyncWebServer server(80);
 // void recvMsg(uint8_t *data, size_t len){
@@ -30,8 +34,9 @@ AsyncWebServer server(80);
 void setup() {
   Serial.begin(115200);
   Serial.println("Hello, ESP32!");
+
   pinMode(LED, OUTPUT);
-  
+
 
   const char* ssid = "Carpenters";
   const char* password = "1201carp";
@@ -47,7 +52,11 @@ void setup() {
   WebSerial.begin(&server);
   //WebSerial.msgCallback(recvMsg);
   server.begin();
+
+
+
   
+
 }
 
 void loop() {
@@ -78,11 +87,30 @@ void loop() {
   else {
     digitalWrite(LED, LOW);
     if(lastMessage!="Light Off") {
+      HTTPClient http;
+      http.begin("http://192.168.86.58:8000/addLightData/?brightness="+String(value));  
       lastMessage = "Light Off";
       WebSerial.println(lastMessage);
-      value = analogRead(water);
-      WebSerial.print("water sensor value:");
-      WebSerial.println(value);
+      http.addHeader("method", "GET");
+      http.addHeader("scheme", "http");
+      int httpResponseCode = http.GET();
+       if (httpResponseCode>0) {
+        Serial.print("HTTP Response code: ");
+        Serial.println(httpResponseCode);
+        String payload = http.getString();
+        Serial.println(payload);
+      }
+      else {
+        Serial.print("Error code: ");
+        Serial.println(httpResponseCode);
+      }
+
+
+
+
+
+
+      http.end();
 
       }
   }
